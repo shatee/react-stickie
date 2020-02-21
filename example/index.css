@@ -1,0 +1,37 @@
+.app {
+  margin: 1em;
+  position: relative;
+}
+
+.container {
+  width: 600px;
+  margin: 1em;
+  /* padding: 2em; */
+  background: #dee;
+  border: 16px solid #acc;
+  overflow-y: scroll;
+  height: 400px;
+}
+
+h1 {
+  margin: 4px;
+  font-size: 18px;
+}
+
+header {
+  padding: 1em;
+  background: rgba(30, 100, 30, 0.5);
+  color: #fff;
+}
+
+footer {
+  padding: 0.5em;
+  background: rgba(30, 30, 100, 0.5);
+  color: #fff;
+}
+
+pre {
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 2.5em;
+}
