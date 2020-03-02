@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "main": "lib/index.js",
+  "module": "esm/index.js",
   "scripts": {
     "build": "npm run build:cjs && npm run build:esm",
     "build:cjs": "tsc --build tsconfig.json",

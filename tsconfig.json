@@ -11,6 +11,8 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "esModuleInterop": true,
+    "declaration": true,
+    "declarationDir": "types",
     "typeRoots": ["node_modules/@types"]
   },
   "include": ["./src/**/*"],
