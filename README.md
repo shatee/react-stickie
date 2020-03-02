@@ -15,6 +15,41 @@ return (
 );
 ```
 
+## Properties
+
+### top
+
+* type: number | undefined
+* optional (default: undefined)
+
+Like top style of sticky position.  
+Not string like '1px'.  
+Specified either of top or bottom.
+
+### bottom
+
+* type : number | undefined
+* optional (default: undefined)
+
+Like bottom style of sticky position.  
+Not string like '1px'.  
+Specified either of top or bottom.
+
+### onChange
+
+* type: function
+* optional (default: undefined)
+
+Called at stick state changed.
+
+### ignorePositionSticky
+
+* type: boolean
+* optional (default: false)
+
+Specified false to disable sticky position.
+It works the same as legacy browser.
+
 ## example
 
 run command
