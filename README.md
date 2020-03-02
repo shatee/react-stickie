@@ -7,6 +7,8 @@ sticky + ie = stickie.
 ## Usage
 
 ```jsx
+import { Sticky } from 'react-stickie';
+
 // { position: sticky; top: 10px }
 return (
   <Sticky top={10}>
