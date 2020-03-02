@@ -4,6 +4,7 @@
   "description": "",
   "main": "lib/index.js",
   "module": "esm/index.js",
+  "types": "types/index.d.ts",
   "scripts": {
     "build": "npm run build:cjs && npm run build:esm",
     "build:cjs": "tsc --build tsconfig.json",
