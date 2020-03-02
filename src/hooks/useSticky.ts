@@ -21,7 +21,7 @@ export const useSticky = (
   const [isStuck, setStuck] = useState(false);
 
   const onScroll = useCallback(throttle(() => {
-    if (!ref.current || !parent || !positionRoot || !overflowRoot) {
+    if (!ref.current || !parent) {
       setStyle(undefined);
       return;
     }
@@ -29,15 +29,15 @@ export const useSticky = (
     const targetRect = ref.current.getBoundingClientRect();
     const contentStyle = getComputedStyle(ref.current.children[0]);
     const parentRect = parent?.getBoundingClientRect();
-    const positionRootRect = positionRoot.getBoundingClientRect();
-    const overflowRootRect = overflowRoot.getBoundingClientRect();
-    const overflowRootStyle = getComputedStyle(overflowRoot);
+    const positionRootRect = positionRoot?.getBoundingClientRect() || { top: 0, left: 0, bottom: 0 };
+    const overflowRootRect = overflowRoot?.getBoundingClientRect() || { top: 0, bottom: 0 };
 
     const height = targetRect.height;
     const width = targetRect.width;
 
-    const overflowRootBorderTop = px2num(overflowRootStyle.borderTopWidth);
-    const overflowRootBorderBottom = px2num(overflowRootStyle.borderBottomWidth);
+    const overflowRootStyle = overflowRoot ? getComputedStyle(overflowRoot) : null;
+    const overflowRootBorderTop = overflowRootStyle ? px2num(overflowRootStyle.borderTopWidth) : 0;
+    const overflowRootBorderBottom = overflowRootStyle ? px2num(overflowRootStyle.borderBottomWidth) : 0;
 
     // top stuck (stick to parent bottom)
     if (top !== undefined && parentRect.bottom - top - overflowRootBorderTop - height < positionRootRect.top) {

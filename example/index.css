@@ -1,6 +1,6 @@
 .app {
   margin: 1em;
-  position: relative;
+  /* position: relative; */
 }
 
 .container {
@@ -9,7 +9,7 @@
   /* padding: 2em; */
   background: #dee;
   border: 16px solid #acc;
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
   height: 400px;
 }
 
