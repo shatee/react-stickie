@@ -34,7 +34,7 @@ export const StickyNotSupports = ({ top, bottom, onChange, children }: StickyPro
     const overflowRoot = ref.current ? closestBy(isOverflowRoot, ref.current) || document.body : null;
     setOverflowRoot(overflowRoot);
     const positionRootBasis = overflowRoot || ref.current;
-    setPositionRoot(positionRootBasis ? closestBy(isAbsoluteRoot, positionRootBasis) : null);
+    setPositionRoot(positionRootBasis ? closestBy(isAbsoluteRoot, positionRootBasis) || document.body : null);
     setParent(ref.current ? ref.current.parentElement : null);
   }, [ref.current]);
 
