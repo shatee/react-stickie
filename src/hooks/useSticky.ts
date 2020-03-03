@@ -2,6 +2,8 @@ import { RefObject, useCallback, useState, CSSProperties, useEffect } from 'reac
 import { useUiEvent } from './useUiEvent';
 import throttle from 'lodash.throttle';
 
+const TIMEOUT = 20;
+
 const px2num = (px: string | number | undefined) => typeof px === 'string' ? parseFloat(px) : px || 0;
 
 /**
@@ -10,8 +12,8 @@ const px2num = (px: string | number | undefined) => typeof px === 'string' ? par
 export const useSticky = (
   ref: RefObject<HTMLDivElement>,
   parent: HTMLElement | null,
-  positionRoot: HTMLElement | null,
   overflowRoot: HTMLElement | null,
+  absoluteOrFixedRoot: HTMLElement | null,
   top: number | undefined,
   bottom: number | undefined
 ) => {
@@ -29,8 +31,8 @@ export const useSticky = (
     const targetRect = ref.current.getBoundingClientRect();
     const contentStyle = getComputedStyle(ref.current.children[0]);
     const parentRect = parent?.getBoundingClientRect();
-    const positionRootRect = positionRoot?.getBoundingClientRect() || { top: 0, left: 0, bottom: 0 };
-    const overflowRootRect = overflowRoot?.getBoundingClientRect() || { top: 0, bottom: 0 };
+    const overflowRootRect = overflowRoot?.getBoundingClientRect() || { top: 0, bottom: window.innerHeight };
+    const absoluteOrFixedRootRect = absoluteOrFixedRoot?.getBoundingClientRect() || { top: 0, left: 0 };
 
     const height = targetRect.height;
     const width = targetRect.width;
@@ -40,7 +42,7 @@ export const useSticky = (
     const overflowRootBorderBottom = overflowRootStyle ? px2num(overflowRootStyle.borderBottomWidth) : 0;
 
     // top stuck (stick to parent bottom)
-    if (top !== undefined && parentRect.bottom - top - overflowRootBorderTop - height < positionRootRect.top) {
+    if (top !== undefined && parentRect.bottom - height < overflowRootRect.top + overflowRootBorderTop) {
       setStyle({
         position: 'absolute',
         left: `${targetRect.left - parentRect.left}px`,
@@ -51,12 +53,12 @@ export const useSticky = (
       return;
     }
 
-    // top sticky (stick to positionRoot top)
-    if (top !== undefined && targetRect.top - top - overflowRootBorderTop <= positionRootRect.top) {
+    // top sticky (stick to absoluteOrFixedRoot top)
+    if (top !== undefined && targetRect.top - top <= overflowRootRect.top + overflowRootBorderTop) {
       setStyle({
-        position: 'absolute',
-        left: `${targetRect.left - positionRootRect.left}px`,
-        top: `${positionRootRect.top - overflowRootRect.top + top + overflowRootBorderTop - px2num(contentStyle.marginTop)}px`,
+        position: absoluteOrFixedRoot ? 'absolute' : 'fixed',
+        left: `${targetRect.left - absoluteOrFixedRootRect.left}px`,
+        top: `${top + overflowRootRect.top + overflowRootBorderTop - px2num(contentStyle.marginTop) - absoluteOrFixedRootRect.top}px`,
         width: `${width}px`
       });
       setStuck(false);
@@ -75,12 +77,12 @@ export const useSticky = (
       return;
     }
 
-    // bottom sticky (stick to positionRoot bottom)
-    if (bottom !== undefined && targetRect.bottom + bottom + overflowRootBorderBottom - 0 >= positionRootRect.bottom) {
+    // bottom sticky (stick to absoluteOrFixedRoot bottom)
+    if (bottom !== undefined && targetRect.bottom + bottom >= overflowRootRect.bottom - overflowRootBorderBottom) {
       setStyle({
-        position: 'absolute',
-        left: `${targetRect.left - positionRootRect.left}px`,
-        bottom: `${positionRootRect.bottom - overflowRootRect.bottom + bottom + overflowRootBorderBottom - px2num(contentStyle.marginBottom)}px`,
+        position: absoluteOrFixedRoot ? 'absolute' : 'fixed',
+        left: `${targetRect.left - absoluteOrFixedRootRect.left}px`,
+        top: `${overflowRootRect.bottom - absoluteOrFixedRootRect.top - targetRect.height - bottom - overflowRootBorderBottom + px2num(contentStyle.marginBottom)}px`,
         width: `${width}px`
       });
       setStuck(false);
@@ -90,7 +92,7 @@ export const useSticky = (
     // release sticky
     setStyle(undefined);
     setStuck(false);
-  }, 50), [ref.current, parent, positionRoot, overflowRoot, top, bottom]);
+  }, TIMEOUT), [ref.current, parent, overflowRoot, absoluteOrFixedRoot, top, bottom]);
 
   // fire scroll at first
   useEffect(() => onScroll(), [ref.current]);
