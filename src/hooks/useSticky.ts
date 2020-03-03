@@ -2,6 +2,8 @@ import { RefObject, useCallback, useState, CSSProperties, useEffect } from 'reac
 import { useUiEvent } from './useUiEvent';
 import throttle from 'lodash.throttle';
 
+const TIMEOUT = 20;
+
 const px2num = (px: string | number | undefined) => typeof px === 'string' ? parseFloat(px) : px || 0;
 
 /**
@@ -10,8 +12,8 @@ const px2num = (px: string | number | undefined) => typeof px === 'string' ? par
 export const useSticky = (
   ref: RefObject<HTMLDivElement>,
   parent: HTMLElement | null,
-  positionRoot: HTMLElement | null,
   overflowRoot: HTMLElement | null,
+  positionRoot: HTMLElement | null,
   top: number | undefined,
   bottom: number | undefined
 ) => {
@@ -29,68 +31,75 @@ export const useSticky = (
     const targetRect = ref.current.getBoundingClientRect();
     const contentStyle = getComputedStyle(ref.current.children[0]);
     const parentRect = parent?.getBoundingClientRect();
-    const positionRootRect = positionRoot?.getBoundingClientRect() || { top: 0, left: 0, bottom: 0 };
-    const overflowRootRect = overflowRoot?.getBoundingClientRect() || { top: 0, bottom: 0 };
+    const overflowRootRect = overflowRoot?.getBoundingClientRect() || { top: 0, bottom: window.innerHeight };
+    const absoluteOrFixedRootRect = positionRoot?.getBoundingClientRect() || { top: 0, left: 0 };
 
     const height = targetRect.height;
     const width = targetRect.width;
 
     const overflowRootStyle = overflowRoot ? getComputedStyle(overflowRoot) : null;
-    const overflowRootBorderTop = overflowRootStyle ? px2num(overflowRootStyle.borderTopWidth) : 0;
-    const overflowRootBorderBottom = overflowRootStyle ? px2num(overflowRootStyle.borderBottomWidth) : 0;
 
-    // top stuck (stick to parent bottom)
-    if (top !== undefined && parentRect.bottom - top - overflowRootBorderTop - height < positionRootRect.top) {
-      setStyle({
-        position: 'absolute',
-        left: `${targetRect.left - parentRect.left}px`,
-        bottom: `-${px2num(contentStyle.marginBottom)}px`,
-        width: `${width}px`
-      });
-      setStuck(true);
-      return;
+    const stickyAreaRect = {
+      top: (overflowRoot ? overflowRootRect.top + px2num(overflowRootStyle!.paddingTop) + px2num(overflowRootStyle!.borderTopWidth) : 0) + (top || 0),
+      bottom: (overflowRoot ? overflowRootRect.bottom - px2num(overflowRootStyle!.paddingTop) - px2num(overflowRootStyle!.borderBottomWidth) : window.innerHeight) - (bottom || 0)
+    };
+
+    if (top !== undefined) {
+      // top stuck (stick to parent bottom)
+      if (parentRect.bottom - height - px2num(contentStyle.marginTop) < stickyAreaRect.top) {
+        setStyle({
+          position: 'absolute',
+          left: `${targetRect.left - parentRect.left}px`,
+          bottom: `-${px2num(contentStyle.marginBottom)}px`,
+          width: `${width}px`
+        });
+        setStuck(true);
+        return;
+      }
+
+      // top sticky (stick to absoluteOrFixedRoot top)
+      if (targetRect.top - px2num(contentStyle.marginTop) <= stickyAreaRect.top) {
+        setStyle({
+          position: overflowRoot ? 'absolute' : 'fixed',
+          left: `${targetRect.left - (overflowRoot ? absoluteOrFixedRootRect.left : 0)}px`,
+          top: `${stickyAreaRect.top + px2num(contentStyle.marginTop) - (overflowRoot ? absoluteOrFixedRootRect.top : 0) + (positionRoot ? 0 : pageYOffset)}px`,
+          width: `${width}px`
+        });
+        setStuck(false);
+        return;
+      }
     }
 
-    // top sticky (stick to positionRoot top)
-    if (top !== undefined && targetRect.top - top - overflowRootBorderTop <= positionRootRect.top) {
-      setStyle({
-        position: 'absolute',
-        left: `${targetRect.left - positionRootRect.left}px`,
-        top: `${positionRootRect.top - overflowRootRect.top + top + overflowRootBorderTop - px2num(contentStyle.marginTop)}px`,
-        width: `${width}px`
-      });
-      setStuck(false);
-      return;
-    }
+    if (bottom !== undefined) {
+      // bottom stuck (stick to parent top)
+      if (parentRect.top + height > stickyAreaRect.bottom) {
+        setStyle({
+          position: 'absolute',
+          left: `${targetRect.left - parentRect.left}px`,
+          top: `${-px2num(contentStyle.marginTop)}px`,
+          width: `${width}px`
+        });
+        setStuck(true);
+        return;
+      }
 
-    // bottom stuck (stick to parent top)
-    if (bottom !== undefined && parentRect.top + targetRect.height + bottom + overflowRootBorderBottom > overflowRootRect.bottom) {
-      setStyle({
-        position: 'absolute',
-        left: `${targetRect.left - parentRect.left}px`,
-        top: `-${px2num(contentStyle.marginTop)}px`,
-        width: `${width}px`
-      });
-      setStuck(true);
-      return;
-    }
-
-    // bottom sticky (stick to positionRoot bottom)
-    if (bottom !== undefined && targetRect.bottom + bottom + overflowRootBorderBottom - 0 >= positionRootRect.bottom) {
-      setStyle({
-        position: 'absolute',
-        left: `${targetRect.left - positionRootRect.left}px`,
-        bottom: `${positionRootRect.bottom - overflowRootRect.bottom + bottom + overflowRootBorderBottom - px2num(contentStyle.marginBottom)}px`,
-        width: `${width}px`
-      });
-      setStuck(false);
-      return;
+      // bottom sticky (stick to absoluteOrFixedRoot bottom)
+      if (targetRect.bottom + px2num(contentStyle.marginBottom) >= stickyAreaRect.bottom) {
+        setStyle({
+          position: overflowRoot ? 'absolute' : 'fixed',
+          left: `${targetRect.left - (overflowRoot ? absoluteOrFixedRootRect.left : 0)}px`,
+          top: `${stickyAreaRect.bottom - targetRect.height - bottom + px2num(contentStyle.marginTop) - px2num(contentStyle.marginBottom) - (overflowRoot ? absoluteOrFixedRootRect.top : 0) + (positionRoot ? 0 : pageYOffset)}px`,
+          width: `${width}px`
+        });
+        setStuck(false);
+        return;
+      }
     }
 
     // release sticky
     setStyle(undefined);
     setStuck(false);
-  }, 50), [ref.current, parent, positionRoot, overflowRoot, top, bottom]);
+  }, TIMEOUT), [ref.current, parent, overflowRoot, positionRoot, top, bottom]);
 
   // fire scroll at first
   useEffect(() => onScroll(), [ref.current]);

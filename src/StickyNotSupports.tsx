@@ -1,8 +1,8 @@
-import React, { useState, useRef, useLayoutEffect, CSSProperties } from 'react';
+import React, { useState, useRef, useLayoutEffect, CSSProperties, useMemo } from 'react';
 import { StickyProps } from './StickyProps';
 import { closestBy } from './utils/closestBy';
 import { isOverflowRoot } from './utils/isOverflowRoot';
-import { isAbsoluteRoot } from './utils/isAbsoluteRoot';
+import { isPositionRoot } from './utils/isPositionRoot';
 import { createPortal } from 'react-dom';
 import { useSticky } from './hooks/useSticky';
 
@@ -22,7 +22,7 @@ export const StickyNotSupports = ({ top, bottom, onChange, children }: StickyPro
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const { style, isStuck } = useSticky(ref, parent, positionRoot, overflowRoot, top, bottom);
+  const { style, isStuck } = useSticky(ref, parent, overflowRoot, positionRoot, top, bottom);
 
   // apply position style to parent element
   useLayoutEffect(() => {
@@ -34,19 +34,21 @@ export const StickyNotSupports = ({ top, bottom, onChange, children }: StickyPro
     const overflowRoot = ref.current ? closestBy(isOverflowRoot, ref.current) : null;
     setOverflowRoot(overflowRoot);
     const positionRootBasis = overflowRoot || ref.current;
-    setPositionRoot(positionRootBasis ? closestBy(isAbsoluteRoot, positionRootBasis) : null);
+    setPositionRoot(positionRootBasis ? closestBy(isPositionRoot, positionRootBasis) : null);
     setParent(ref.current ? ref.current.parentElement : null);
   }, [ref.current]);
+
+  const isStick = useMemo(() => style?.position === 'absolute' || style?.position === 'fixed', [style?.position]);
 
   // call onChange after stick state changed.
   useLayoutEffect(() => {
     if (!onChange) return;
-    onChange(style?.position === 'absolute');
-  }, [style?.position]);
+    onChange(isStick);
+  }, [isStick]);
 
   // udpate dummy child element style
   useLayoutEffect(() => {
-    if (!ref.current || style?.position === 'absolute') return;
+    if (!ref.current || isStick) return;
     const child = ref.current.children[0];
     const childStyle = getComputedStyle(child);
     setDummyChildStyle({
@@ -54,7 +56,7 @@ export const StickyNotSupports = ({ top, bottom, onChange, children }: StickyPro
       height: `${child.scrollHeight}px`,
       margin: childStyle.margin
     });
-  }, [ref.current, style?.position === 'absolute']);
+  }, [ref.current, isStick]);
 
   return (
     <div ref={ref}>
@@ -63,7 +65,7 @@ export const StickyNotSupports = ({ top, bottom, onChange, children }: StickyPro
         ? (
           <>
             <div style={dummyChildStyle} />
-            {createPortal(<div style={style}>{children}</div>, (isStuck && parent) || positionRoot || overflowRoot || document.body)}
+            {createPortal(<div style={style}>{children}</div>, (isStuck && parent) || overflowRoot || document.body)}
           </>
         )
         : children

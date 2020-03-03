@@ -1,15 +1,21 @@
+body {
+  margin: 1em;
+  padding: 2em;
+}
+
 .app {
   margin: 1em;
-  /* position: relative; */
+  position: relative;
+  top: 40px;
 }
 
 .container {
   width: 600px;
-  margin: 1em;
-  /* padding: 2em; */
+  margin: 2em;
+  padding: 3em;
   background: #dee;
-  border: 16px solid #acc;
-  /* overflow-y: scroll; */
+  border: 24px solid #acc;
+  overflow-y: scroll;
   height: 400px;
 }
 
@@ -19,12 +25,14 @@ h1 {
 }
 
 header {
+  margin: 8px;
   padding: 1em;
   background: rgba(30, 100, 30, 0.5);
   color: #fff;
 }
 
 footer {
+  margin: 8px 4px 12px;
   padding: 0.5em;
   background: rgba(30, 30, 100, 0.5);
   color: #fff;
