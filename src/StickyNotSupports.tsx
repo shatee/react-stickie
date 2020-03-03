@@ -2,7 +2,7 @@ import React, { useState, useRef, useLayoutEffect, CSSProperties, useMemo } from
 import { StickyProps } from './StickyProps';
 import { closestBy } from './utils/closestBy';
 import { isOverflowRoot } from './utils/isOverflowRoot';
-import { isAbsoluteOrFixed } from './utils/isAbsoluteOrFixed';
+import { isPositionRoot } from './utils/isPositionRoot';
 import { createPortal } from 'react-dom';
 import { useSticky } from './hooks/useSticky';
 
@@ -13,8 +13,8 @@ import { useSticky } from './hooks/useSticky';
 export const StickyNotSupports = ({ top, bottom, onChange, children }: StickyProps): React.ReactElement => {
   // overflow style root element
   const [overflowRoot, setOverflowRoot] = useState<HTMLElement | null>(null);
-  // position: absolute or fixed root element
-  const [absoluteOrFixedRoot, setAbsoluteOrFixedRoot] = useState<HTMLElement | null>(null);
+  // position style root element
+  const [positionRoot, setPositionRoot] = useState<HTMLElement | null>(null);
   // parent element
   const [parent, setParent] = useState<HTMLElement | null>(null);
   // dummy element for target element at replaced
@@ -22,7 +22,7 @@ export const StickyNotSupports = ({ top, bottom, onChange, children }: StickyPro
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const { style, isStuck } = useSticky(ref, parent, overflowRoot, absoluteOrFixedRoot, top, bottom);
+  const { style, isStuck } = useSticky(ref, parent, overflowRoot, positionRoot, top, bottom);
 
   // apply position style to parent element
   useLayoutEffect(() => {
@@ -34,7 +34,7 @@ export const StickyNotSupports = ({ top, bottom, onChange, children }: StickyPro
     const overflowRoot = ref.current ? closestBy(isOverflowRoot, ref.current) : null;
     setOverflowRoot(overflowRoot);
     const positionRootBasis = overflowRoot || ref.current;
-    setAbsoluteOrFixedRoot(positionRootBasis ? closestBy(isAbsoluteOrFixed, positionRootBasis) : null);
+    setPositionRoot(positionRootBasis ? closestBy(isPositionRoot, positionRootBasis) : null);
     setParent(ref.current ? ref.current.parentElement : null);
   }, [ref.current]);
 
@@ -65,7 +65,7 @@ export const StickyNotSupports = ({ top, bottom, onChange, children }: StickyPro
         ? (
           <>
             <div style={dummyChildStyle} />
-            {createPortal(<div style={style}>{children}</div>, (isStuck && parent) || absoluteOrFixedRoot || document.body)}
+            {createPortal(<div style={style}>{children}</div>, (isStuck && parent) || overflowRoot || document.body)}
           </>
         )
         : children

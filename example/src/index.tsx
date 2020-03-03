@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Sticky } from '../../src';
 import { content } from './content';
 
+// const ignorePositionSticky = false;
 const ignorePositionSticky = true;
 
 const StickyHeader = ({ heading }: { heading: string }) => {
