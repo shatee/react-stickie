@@ -2,7 +2,7 @@ import { RefObject, useCallback, useState, CSSProperties, useEffect } from 'reac
 import { useUiEvent } from './useUiEvent';
 import throttle from 'lodash.throttle';
 
-const TIMEOUT = 50;
+const TIMEOUT = 20;
 
 const px2num = (px: string | number | undefined) => typeof px === 'string' ? parseFloat(px) : px || 0;
 
@@ -61,8 +61,9 @@ export const useSticky = (
       if (targetRect.top - px2num(contentStyle.marginTop) <= stickyAreaRect.top) {
         setStyle({
           position: overflowRoot ? 'absolute' : 'fixed',
-          left: `${targetRect.left - (overflowRoot ? absoluteOrFixedRootRect.left : 0) + (positionRoot ? 0 : pageXOffset)}px`,
-          top: `${stickyAreaRect.top + px2num(contentStyle.marginTop) - (overflowRoot ? absoluteOrFixedRootRect.top : 0) + (positionRoot ? 0 : pageYOffset)}px`,
+          left: `${targetRect.left - (overflowRoot ? absoluteOrFixedRootRect.left : 0)}px`,
+          top: `${stickyAreaRect.top + px2num(contentStyle.marginTop) - (overflowRoot ? absoluteOrFixedRootRect.top : 0)}px`,
+          transform: `translate(${positionRoot ? 0 : pageXOffset}px, ${positionRoot ? 0 : pageYOffset}px)`,
           width: `${width}px`
         });
         setStuck(false);
@@ -87,8 +88,9 @@ export const useSticky = (
       if (targetRect.bottom + px2num(contentStyle.marginBottom) >= stickyAreaRect.bottom) {
         setStyle({
           position: overflowRoot ? 'absolute' : 'fixed',
-          left: `${targetRect.left - (overflowRoot ? absoluteOrFixedRootRect.left : 0) + (positionRoot ? 0 : pageXOffset)}px`,
-          top: `${stickyAreaRect.bottom - targetRect.height - bottom + px2num(contentStyle.marginTop) - px2num(contentStyle.marginBottom) - (overflowRoot ? absoluteOrFixedRootRect.top : 0) + (positionRoot ? 0 : pageYOffset)}px`,
+          left: `${targetRect.left - (overflowRoot ? absoluteOrFixedRootRect.left : 0)}px`,
+          top: `${stickyAreaRect.bottom - targetRect.height - bottom + px2num(contentStyle.marginTop) - px2num(contentStyle.marginBottom) - (overflowRoot ? absoluteOrFixedRootRect.top : 0)}px`,
+          transform: `translate(${positionRoot ? 0 : pageXOffset}px, ${positionRoot ? 0 : pageYOffset}px)`,
           width: `${width}px`
         });
         setStuck(false);
