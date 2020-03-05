@@ -24,11 +24,19 @@ h1 {
   font-size: 18px;
 }
 
+.headerWrapper {
+  background: rgba(0, 0, 0, 0.1);
+}
+
 header {
   margin: 8px;
   padding: 1em;
   background: rgba(30, 100, 30, 0.5);
   color: #fff;
+}
+
+.footerWrapper {
+  background: rgba(0, 0, 0, 0.1);
 }
 
 footer {

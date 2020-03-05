@@ -10,7 +10,7 @@ import { useSticky } from './hooks/useSticky';
  * component like sticky.
  * use dom scroll event with window resize event
  */
-export const StickyNotSupports = ({ top, bottom, onChange, children }: StickyProps): React.ReactElement => {
+export const StickyNotSupports = ({ className, top, bottom, onChange, children }: StickyProps): React.ReactElement => {
   // overflow style root element
   const [overflowRoot, setOverflowRoot] = useState<HTMLElement | null>(null);
   // position style root element
@@ -54,18 +54,19 @@ export const StickyNotSupports = ({ top, bottom, onChange, children }: StickyPro
     setDummyChildStyle({
       width: `${child.scrollWidth}px`,
       height: `${child.scrollHeight}px`,
-      margin: childStyle.margin
+      margin: childStyle.margin,
+      visibility: 'hidden'
     });
   }, [ref.current, isStick]);
 
   return (
-    <div ref={ref}>
+    <div className={className} ref={ref} style={style ? { visibility: 'hidden' } : undefined}>
       {
-        (style || isStuck)
+        style
         ? (
           <>
             <div style={dummyChildStyle} />
-            {createPortal(<div style={style}>{children}</div>, (isStuck && parent) || overflowRoot || document.body)}
+            {createPortal(<div className={className} style={style}>{children}</div>, (isStuck && parent) || overflowRoot || document.body)}
           </>
         )
         : children

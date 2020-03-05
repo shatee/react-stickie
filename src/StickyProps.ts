@@ -1,4 +1,5 @@
 export type StickyProps = {
+  className?: string;
   top?: number;
   bottom?: number;
   onChange?: (isFloat: boolean) => void;
