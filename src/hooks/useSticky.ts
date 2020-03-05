@@ -61,9 +61,9 @@ export const useSticky = (
       if (targetRect.top - px2num(contentStyle.marginTop) <= stickyAreaRect.top) {
         setStyle({
           position: overflowRoot ? 'absolute' : 'fixed',
-          left: `${targetRect.left - (overflowRoot ? absoluteOrFixedRootRect.left : 0)}px`,
+          left: `${(overflowRoot ? -absoluteOrFixedRootRect.left : 0)}px`,
           top: `${stickyAreaRect.top + px2num(contentStyle.marginTop) - (overflowRoot ? absoluteOrFixedRootRect.top : 0)}px`,
-          transform: `translate(${positionRoot ? 0 : pageXOffset}px, ${positionRoot ? 0 : pageYOffset}px)`,
+          transform: `translate(${targetRect.left + (positionRoot ? 0 : pageXOffset)}px, ${positionRoot ? 0 : pageYOffset}px)`,
           width: `${width}px`
         });
         setStuck(false);
@@ -88,9 +88,9 @@ export const useSticky = (
       if (targetRect.bottom + px2num(contentStyle.marginBottom) >= stickyAreaRect.bottom) {
         setStyle({
           position: overflowRoot ? 'absolute' : 'fixed',
-          left: `${targetRect.left - (overflowRoot ? absoluteOrFixedRootRect.left : 0)}px`,
+          left: `${(overflowRoot ? -absoluteOrFixedRootRect.left : 0)}px`,
           top: `${stickyAreaRect.bottom - targetRect.height - bottom + px2num(contentStyle.marginTop) - px2num(contentStyle.marginBottom) - (overflowRoot ? absoluteOrFixedRootRect.top : 0)}px`,
-          transform: `translate(${positionRoot ? 0 : pageXOffset}px, ${positionRoot ? 0 : pageYOffset}px)`,
+          transform: `translate(${targetRect.left + (positionRoot ? 0 : pageXOffset)}px, ${positionRoot ? 0 : pageYOffset}px)`,
           width: `${width}px`
         });
         setStuck(false);
