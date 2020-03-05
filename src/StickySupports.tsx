@@ -9,23 +9,19 @@ import { useIntersectionObserver } from './hooks/useIntersectionObserver';
  */
 export const StickySupports = ({ className, top, bottom, onChange, children }: StickyProps): React.ReactElement => {
   const ref = useRef<HTMLDivElement>(null);
-  const root = useMemo(() => ref.current ? closestBy(isOverflowRoot, ref.current) : null, [ref.current]);
+  const root = useMemo(() => ref.current ? closestBy(isOverflowRoot, ref.current) : document.body, [ref.current]);
 
   const entry = useIntersectionObserver(
     ref,
     {
       threshold: 1,
       root,
-      rootMargin:
-        `${
-          typeof top === 'number'
-            ? -top - 1
-            : 9999 // 雑、本来は ref.current.offsetHeight を指定する
-        }px 0px ${
-          typeof bottom === 'number'
-            ? -bottom - 1
-            : 9999 // 雑、本来は ref.current.offsetHeight を指定する
-        }px 0px`
+      rootMargin: [
+        `${typeof top === 'number'? -top - 1 : 9999}px`, // 雑、本来は ref.current.offsetHeight を指定する
+        `${document.body.offsetWidth}px`,
+        `${typeof bottom === 'number' ? -bottom - 1 : 9999}px`, // 雑、本来は ref.current.offsetHeight を指定する
+        `${document.body.offsetWidth}px`
+      ].join(' ')
     }
   );
 
