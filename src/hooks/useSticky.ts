@@ -73,7 +73,7 @@ export const useSticky = (
 
     if (bottom !== undefined) {
       // bottom stuck (stick to parent top)
-      if (parentRect.top + height > stickyAreaRect.bottom) {
+      if (parentRect.top + height + px2num(contentStyle.marginTop) + px2num(contentStyle.marginBottom) > stickyAreaRect.bottom) {
         setStyle({
           position: 'absolute',
           left: `${targetRect.left - parentRect.left}px`,

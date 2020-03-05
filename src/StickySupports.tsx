@@ -7,14 +7,31 @@ import { useIntersectionObserver } from './hooks/useIntersectionObserver';
 /**
  * sticky wrapper
  */
-export const StickySupports = ({ top, bottom, onChange, children }: StickyProps): React.ReactElement => {
+export const StickySupports = ({ className, top, bottom, onChange, children }: StickyProps): React.ReactElement => {
   const ref = useRef<HTMLDivElement>(null);
   const root = useMemo(() => ref.current ? closestBy(isOverflowRoot, ref.current) : null, [ref.current]);
 
-  const entry = useIntersectionObserver(ref, { threshold: 1, root, rootMargin: `${-(top || 0) - 1}px 0px ${-(bottom || 0)}px 0px` });
+  const entry = useIntersectionObserver(
+    ref,
+    {
+      threshold: 1,
+      root,
+      rootMargin:
+        `${
+          typeof top === 'number'
+            ? -top - 1
+            : 9999 // 雑、本来は ref.current.offsetHeight を指定する
+        }px 0px ${
+          typeof bottom === 'number'
+            ? -bottom - 1
+            : 9999 // 雑、本来は ref.current.offsetHeight を指定する
+        }px 0px`
+    }
+  );
 
   const isStick = useMemo(() => {
     return !!(entry && entry.intersectionRatio < 1);
+    entry?.boundingClientRect
   }, [entry?.intersectionRatio]);
 
   const style = useMemo((): CSSProperties => ({
@@ -32,7 +49,7 @@ export const StickySupports = ({ top, bottom, onChange, children }: StickyProps)
   }, [isStick]);
 
   return (
-    <div ref={ref} style={style}>
+    <div className={className} ref={ref} style={style}>
       {children}
     </div>
   )
