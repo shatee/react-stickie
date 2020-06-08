@@ -31,7 +31,10 @@ export const StickyNotSupports = ({ className, top, bottom, onChange, children }
 
   // explore closest scroll target root dom, set overflowRoot
   useLayoutEffect(() => {
-    const overflowRoot = ref.current ? closestBy(isOverflowRoot, ref.current) : null;
+    let overflowRoot = ref.current ? closestBy(isOverflowRoot, ref.current) : null;
+    if (overflowRoot === document.body) {
+      overflowRoot = null;
+    }
     setOverflowRoot(overflowRoot);
     const positionRootBasis = overflowRoot || ref.current;
     setPositionRoot(positionRootBasis ? closestBy(isPositionRoot, positionRootBasis) : null);
