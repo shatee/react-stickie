@@ -9,7 +9,12 @@ import { useIntersectionObserver } from './hooks/useIntersectionObserver';
  */
 export const StickySupports = ({ className, top, bottom, onChange, children }: StickyProps): React.ReactElement => {
   const ref = useRef<HTMLDivElement>(null);
-  const root = useMemo(() => ref.current ? closestBy(isOverflowRoot, ref.current) : document.body, [ref.current]);
+  const root = useMemo(() => {
+    if (!ref.current) return null;
+    const root = closestBy(isOverflowRoot, ref.current);
+    // body だったら null にして viewport を対象とする
+    return root !== document.body ? root : null;
+  }, [ref.current]);
 
   const entry = useIntersectionObserver(
     ref,

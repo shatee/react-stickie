@@ -15,7 +15,7 @@ const StickyHeader = ({ heading }: { heading: string }) => {
   }, []);
 
   return (
-    <Sticky className="headerWrapper" top={0} ignorePositionSticky={ignorePositionSticky} onChange={onChange}>
+    <Sticky className="headerWrapper" top={20} ignorePositionSticky={ignorePositionSticky} onChange={onChange}>
       <header className={isStick ? 'stick' : ''}>
         <h1>{heading}</h1>
         <div>isStick: {isStick ? 'true' : 'false'}</div>
