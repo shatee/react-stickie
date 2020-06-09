@@ -29,7 +29,7 @@ h1 {
 }
 
 header {
-  margin: 8px;
+  /* margin: 8px; */
   padding: 1em;
   background: rgba(30, 100, 30, 0.5);
   color: #fff;
@@ -40,7 +40,7 @@ header {
 }
 
 footer {
-  margin: 8px 4px 12px;
+  /* margin: 8px 4px 12px; */
   padding: 0.5em;
   background: rgba(30, 30, 100, 0.5);
   color: #fff;
