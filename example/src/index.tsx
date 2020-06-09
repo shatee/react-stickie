@@ -15,7 +15,12 @@ const StickyHeader = ({ heading }: { heading: string }) => {
   }, []);
 
   return (
-    <Sticky className="headerWrapper" top={20} ignorePositionSticky={ignorePositionSticky} onChange={onChange}>
+    <Sticky
+      className="headerWrapper"
+      top={20}
+      ignorePositionSticky={ignorePositionSticky}
+      onChange={onChange}
+    >
       <header className={isStick ? 'stick' : ''}>
         <h1>{heading}</h1>
         <div>isStick: {isStick ? 'true' : 'false'}</div>
@@ -33,7 +38,12 @@ const StickyFooter = ({ heading }: { heading: string }) => {
   }, []);
 
   return (
-    <Sticky className="footerWrapper" bottom={20} ignorePositionSticky={ignorePositionSticky} onChange={onChange}>
+    <Sticky
+      className="footerWrapper"
+      bottom={20}
+      ignorePositionSticky={ignorePositionSticky}
+      onChange={onChange}
+    >
       <footer className={isStick ? 'stick' : ''}>
         <h1>{heading}</h1>
         <div>isStick: {isStick ? 'true' : 'false'}</div>
@@ -53,7 +63,7 @@ const App = (): ReactElement => {
         </section>
       ))}
     </div>
-  )
+  );
 };
 
 ReactDOM.render(<App />, document.querySelector('.app'));
